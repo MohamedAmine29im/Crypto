@@ -17,6 +17,11 @@ val EthereumCyan = Color(0xFF627EEA)
 val BlockchainEmerald = Color(0xFF00E676)
 val KaspaCyan = Color(0xFF49E9CE)
 val SolanaPurple = Color(0xFF9945FF)
+val BnbGold = Color(0xFFF0B90B)
+val DogeYellow = Color(0xFFBA9F33)
+val LitecoinBlue = Color(0xFF345D9D)
+val TonBlue = Color(0xFF0098EA)
+val RavencoinOrange = Color(0xFFF05238)
 
 // Functional Colors
 val CryptoTextPrimary = Color(0xFFF1F5F9)

@@ -1,58 +1,61 @@
 <resources>
-    <string name="app_name">CryptoMine Pro</string>
-    <string name="app_name_ar">كريبتو ماين برو</string>
-    <string name="tagline">تعدين العملات الرقمية والتحويل المباشر إلى بايننس وبلوكشاين</string>
-    
+    <string name="app_name">Bitcoin Mining Lab</string>
+    <string name="app_name_ar">مختبر تعدين البيتكوين</string>
+    <string name="app_tagline">مختبر تعليمي لاختبار خوارزمية SHA-256 وإثبات العمل محلياً</string>
+
     <!-- Navigation -->
-    <string name="nav_mining">التعدين</string>
-    <string name="nav_transfer">التحويل والسحب</string>
-    <string name="nav_hardware">العتاد والترقيات</string>
-    <string name="nav_history">السجل</string>
-    <string name="nav_market">السوق</string>
-    
-    <!-- Mining Screen -->
-    <string name="mining_title">محطة التعدين السحابي</string>
-    <string name="hashrate_label">معدل التجزئة (Hashrate)</string>
-    <string name="power_label">استهلاك الطاقة</string>
-    <string name="efficiency_label">الكفاءة</string>
-    <string name="temperature_label">الحرارة</string>
-    <string name="fan_speed_label">المراوح</string>
-    <string name="status_active">نشط ويعمل</string>
-    <string name="status_paused">متوقف مؤقتاً</string>
-    <string name="status_overclock">وضع التوربو النشط</string>
-    <string name="start_mining">بدء التعدين</string>
-    <string name="pause_mining">إيقاف مؤقت</string>
-    <string name="boost_mining">تفعيل التوربو (+30%)</string>
-    <string name="select_crypto">اختر العملة للتعدين</string>
-    <string name="unmined_balance">الرصيد القابل للسحب</string>
-    <string name="daily_estimated">العائد اليومي المتوقع</string>
-    
-    <!-- Transfers Screen -->
-    <string name="transfer_title">تحويل الأرباح</string>
-    <string name="transfer_subtitle">سحب فوري إلى منصة Binance أو أي محفظة Blockchain</string>
-    <string name="tab_binance">منصة بايننس (Binance)</string>
-    <string name="tab_blockchain">محفظة البلوكشاين (Web3)</string>
-    <string name="binance_pay_title">Binance Pay / UID</string>
-    <string name="binance_bep20_title">شبكة BNB Smart Chain (BEP-20)</string>
-    <string name="input_binance_id">أدخل معرّف بايننس (Binance User ID / Pay ID)</string>
-    <string name="input_blockchain_address">أدخل عنوان محفظة البلوكشاين</string>
-    <string name="select_network">اختر الشبكة</string>
-    <string name="amount_to_withdraw">المبلغ المراد سحبه</string>
-    <string name="all_balance">الكل</string>
-    <string name="estimated_fee">رسوم الشبكة المقدرة</string>
-    <string name="instant_fee_zero">رسوم مجانية (0%) عبر Binance Pay</string>
-    <string name="submit_withdrawal">تأكيد عملية التحويل</string>
-    
-    <!-- Hardware & Upgrades -->
-    <string name="hardware_title">مركز السيرفرات والعتاد</string>
-    <string name="upgrade_hashrate">زيادة سرعة التعدين والإنتاج اليومي</string>
-    
-    <!-- Transactions -->
-    <string name="transactions_title">سجل المعاملات والأرباح</string>
-    <string name="no_transactions">لا توجد عمليات سحب حتى الآن</string>
-    
-    <!-- General -->
-    <string name="currency_usd">USD</string>
-    <string name="status_completed">مكتمل بنجاح</string>
-    <string name="status_pending">قيد المعالجة في البلوكشاين</string>
+    <string name="nav_dashboard">لوحة التحكم</string>
+    <string name="nav_hardware">العتاد والحرارة</string>
+    <string name="nav_validator">فاحص العناوين</string>
+    <string name="nav_education">دليل التعدين</string>
+    <string name="nav_install">تثبيت التطبيق APK</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">مختبر فحص خوارزمية SHA-256</string>
+    <string name="dashboard_subtitle">اختبار حقيقي لقوة المعالجة الرياضية على جهاز Samsung Galaxy S21+ 5G</string>
+    <string name="hashrate_title">معدل التجزئة اللحظي</string>
+    <string name="hashrate_unit">H/s</string>
+    <string name="total_hashes">إجمالي محاولات التجزئة</string>
+    <string name="elapsed_time">الوقت المنقضي</string>
+    <string name="difficulty_level">مستوى الصعوبة التجريبي</string>
+    <string name="target_prefix">بادئة الهاش المطلوبة</string>
+    <string name="solved_blocks">الكتل التجريبية المحلولة</string>
+    <string name="btn_start_benchmark">بدء اختبار التجزئة (Start Benchmark)</string>
+    <string name="btn_stop_benchmark">إيقاف الاختبار فوراً (STOP)</string>
+    <string name="btn_reset_stats">تصفير الإحصائيات</string>
+
+    <!-- Realism & Honesty Disclaimer -->
+    <string name="disclaimer_title">تنبيه تعليمي وتقني هام ℹ️</string>
+    <string name="disclaimer_short">هذا التطبيق مخصص للأغراض التعليمية واختبار أداء المعالج محلياً فقط. لا يقوم بتعدين بيتكوين حقيقي على الشبكة العالمية.</string>
+    <string name="disclaimer_long">تعتمد شبكة البيتكوين العالمية الحقيقية على أجهزة متخصصة (ASICs) بمعدل تجزئة عالمي يفوق 700 إكساهاش في الثانية (700,000,000,000,000,000,000 H/s). معالجات الهواتف الذكية صُممت للتطبيقات اليومية وليس لتعدين البيتكوين الفعلي، ولا يمكن لأي هاتف محمول منافسة أجهزة الآسك أو تحقيق أرباح مالية. هذا التطبيق يُجري عمليات تجزئة حقيقية (Double SHA-256) لمعرفة سرعة هاتفك بأمان تام وبدون أي وعود زائفة أو عمليات احتيال.</string>
+
+    <!-- Hardware & Safety -->
+    <string name="hardware_title">مراقبة العتاد وحماية البطارية</string>
+    <string name="target_device_info">الجهاز المستهدف: Samsung Galaxy S21+ 5G (8 Cores CPU)</string>
+    <string name="temp_label">حرارة البطارية / الجهاز</string>
+    <string name="battery_label">مستوى شحن البطارية</string>
+    <string name="charging_status">حالة الشاحن</string>
+    <string name="threads_label">عدد خيوط المعالجة النشطة (Threads)</string>
+    <string name="throttle_delay_label">فاصل التبريد بين الدفعات (Cooling Throttle)</string>
+    <string name="max_temp_cutoff">الحد الأقصى للحرارة لإيقاف المعالج تلقائياً</string>
+    <string name="safety_alert_overheat">⚠️ تم إيقاف الاختبار تلقائياً لحماية الهاتف من ارتفاع درجة الحرارة!</string>
+
+    <!-- Bitcoin Address Validator -->
+    <string name="validator_title">فاحص عناوين البيتكوين (للعرض والتحقق فقط)</string>
+    <string name="validator_subtitle">التحقق من صحة صيغ عناوين البيتكوين بدون حفظ أو طلب أي مفاتيح خاصة</string>
+    <string name="input_address_hint">أدخل عنوان بيتكوين للتحقق من بنيته (مثال: bc1q..., 1..., 3...)</string>
+    <string name="address_type_legacy">عنوان تقليدي Legacy (P2PKH - يبدأ بـ 1)</string>
+    <string name="address_type_p2sh">عنوان نصوص Script (P2SH - يبدأ بـ 3)</string>
+    <string name="address_type_bech32">عنوان سيغويت أصلي Native SegWit (Bech32 - يبدأ بـ bc1q)</string>
+    <string name="address_type_taproot">عنوان تابروت حديث Taproot (Bech32m - يبدأ بـ bc1p)</string>
+    <string name="address_invalid">صيغة عنوان غير صالحة للبيتكوين</string>
+    <string name="no_custody_notice">🔒 أمان بنسبة 100%: التطبيق لا يخزن ولا يطلب أبداً أي مفاتيح خاصة (Private Keys) أو عبارات استرداد (Seed Phrases).</string>
+
+    <!-- APK Installation Guide -->
+    <string name="install_guide_title">طريقة تثبيت التطبيق على هاتف أندرويد (APK)</string>
+    <string name="install_step_1">1. تحميل وتصدير ملف التطبيق (APK) من قائمة الخيارات في المنصة أو مجلد البناء.</string>
+    <string name="install_step_2">2. افتح تطبيق "ملفاتي" (My Files) أو مجلد "التنزيلات" (Downloads) في هاتف Samsung Galaxy.</string>
+    <string name="install_step_3">3. اضغط على ملف التطبيق BitcoinMiningLab.apk لبدء التثبيت.</string>
+    <string name="install_step_4">4. إذا ظهرت رسالة أمان، فعّل خيار "السماح من هذا المصدر" (Allow from this source).</string>
+    <string name="install_step_5">5. اضغط على "تثبيت" (Install) ثم "فتح" (Open) ليعمل التطبيق بكامل وظائفه وبأعلى أداء.</string>
 </resources>

@@ -28,16 +28,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.CurrencyBitcoin
-import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.ReceiptLong
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -65,105 +66,71 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.data.model.CryptoCurrency
-import com.example.ui.MiningUiState
-import com.example.ui.MiningViewModel
-import com.example.ui.Screen
-import com.example.ui.components.TransactionReceiptModal
-import com.example.ui.components.WithdrawConfirmModal
-import com.example.ui.screens.HardwareUpgradesScreen
-import com.example.ui.screens.MarketCalculatorScreen
-import com.example.ui.screens.MiningDashboardScreen
-import com.example.ui.screens.TransactionHistoryScreen
-import com.example.ui.screens.WithdrawTransferScreen
-import com.example.ui.theme.BinanceYellow
+import com.example.data.model.Screen
+import com.example.ui.BenchmarkViewModel
+import com.example.ui.screens.AddressValidatorScreen
+import com.example.ui.screens.ApkInstallGuideScreen
+import com.example.ui.screens.DashboardScreen
+import com.example.ui.screens.EducationalLabScreen
+import com.example.ui.screens.HardwareTelemetryScreen
+import com.example.ui.theme.BitcoinGold
 import com.example.ui.theme.BlockchainEmerald
 import com.example.ui.theme.CryptoBorder
 import com.example.ui.theme.CryptoDarkBackground
 import com.example.ui.theme.CryptoDarkCard
 import com.example.ui.theme.CryptoDarkSurface
-import com.example.ui.theme.CryptoDarkSurfaceVariant
+import com.example.ui.theme.CryptoRed
 import com.example.ui.theme.CryptoTextMuted
 import com.example.ui.theme.CryptoTextPrimary
 import com.example.ui.theme.CryptoTextSecondary
 import com.example.ui.theme.MyApplicationTheme
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MiningViewModel by viewModels()
+    private val viewModel: BenchmarkViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MyApplicationTheme {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    CryptoMiningApp(viewModel = viewModel)
+                    BitcoinMiningLabApp(viewModel = viewModel)
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Stop benchmark when leaving foreground to protect user's battery and CPU
+        viewModel.stopBenchmark()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CryptoMiningApp(viewModel: MiningViewModel) {
+fun BitcoinMiningLabApp(viewModel: BenchmarkViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Handle snackbar messages
-    LaunchedEffect(uiState.snackbarMessage) {
-        uiState.snackbarMessage?.let { msg ->
+    LaunchedEffect(uiState.alertMessage) {
+        uiState.alertMessage?.let { msg ->
             snackbarHostState.showSnackbar(msg)
-            viewModel.clearSnackbar()
+            viewModel.dismissAlert()
         }
     }
 
-    // Handle back button: if not on MINING screen, return to MINING screen
-    if (uiState.currentScreen != Screen.MINING) {
-        BackHandler {
-            viewModel.setScreen(Screen.MINING)
-        }
-    }
-
-    // Modal dialogs
-    if (uiState.isConfirmDialogOpen) {
-        val amount = uiState.withdrawAmountText.toDoubleOrNull() ?: 0.0
-        val platform = if (uiState.withdrawTab == com.example.ui.WithdrawTab.BINANCE) "Binance" else "Blockchain"
-        val isBinancePay = uiState.binanceMode == com.example.ui.BinanceTransferMode.BINANCE_PAY
-        val fee = if (platform == "Binance" && isBinancePay) 0.0 else when (uiState.selectedCoin) {
-            CryptoCurrency.BTC -> 0.00003 * uiState.gasSpeed.multiplier
-            CryptoCurrency.ETH -> 0.0012 * uiState.gasSpeed.multiplier
-            CryptoCurrency.SOL -> 0.005 * uiState.gasSpeed.multiplier
-            CryptoCurrency.USDT -> 1.0 * uiState.gasSpeed.multiplier
-            CryptoCurrency.KAS -> 1.0 * uiState.gasSpeed.multiplier
-        }
-
-        WithdrawConfirmModal(
-            platform = platform,
-            coin = uiState.selectedCoin,
-            amount = amount,
-            recipient = uiState.destinationAddressText,
-            network = uiState.selectedNetwork,
-            fee = fee,
-            isProcessing = uiState.isProcessing,
-            onConfirm = { viewModel.confirmWithdrawal() },
-            onDismiss = { viewModel.dismissConfirmDialog() }
-        )
-    }
-
-    if (uiState.isReceiptDialogOpen && uiState.lastCompletedTx != null) {
-        TransactionReceiptModal(
-            transaction = uiState.lastCompletedTx!!,
-            onDismiss = { viewModel.dismissReceiptDialog() }
-        )
+    // Handle Android system back button
+    BackHandler(enabled = uiState.currentScreen != Screen.DASHBOARD) {
+        viewModel.setScreen(Screen.DASHBOARD)
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = CryptoDarkBackground,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -172,69 +139,59 @@ fun CryptoMiningApp(viewModel: MiningViewModel) {
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.crypto_mine_icon_1791643225731),
-                            contentDescription = "App Icon",
+                            painter = painterResource(id = R.drawable.btc_lab_icon_1791708221833),
+                            contentDescription = "Bitcoin Mining Lab Logo",
                             modifier = Modifier
-                                .size(36.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp, BinanceYellow.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                                .size(34.dp)
+                                .clip(RoundedCornerShape(8.dp))
                         )
                         Column {
                             Text(
-                                text = "CryptoMine Pro",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                                color = BinanceYellow
+                                text = "Bitcoin Mining Lab",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = CryptoTextPrimary
                             )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(CircleShape)
-                                        .background(if (uiState.profile.isMining) BlockchainEmerald else CryptoTextMuted)
-                                )
-                                Text(
-                                    text = if (uiState.profile.isMining) "متصل بالسيرفر (Pool Online)" else "التعدين متوقف",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = CryptoTextSecondary
-                                )
-                            }
+                            Text(
+                                text = "Samsung Galaxy S21+ 5G",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = CryptoTextSecondary
+                            )
                         }
                     }
                 },
                 actions = {
-                    // Quick balance display
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = CryptoDarkCard,
+                        color = if (uiState.engineState.isRunning) BlockchainEmerald.copy(alpha = 0.2f) else CryptoDarkCard,
                         modifier = Modifier
-                            .border(1.dp, CryptoBorder, RoundedCornerShape(12.dp))
                             .padding(end = 8.dp)
+                            .border(
+                                1.dp,
+                                if (uiState.engineState.isRunning) BlockchainEmerald else CryptoBorder,
+                                RoundedCornerShape(12.dp)
+                            )
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.CurrencyBitcoin,
-                                contentDescription = null,
-                                tint = BinanceYellow,
-                                modifier = Modifier.size(16.dp)
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(if (uiState.engineState.isRunning) BlockchainEmerald else CryptoTextMuted)
                             )
                             Text(
-                                text = "${String.format(Locale.US, "%.4f", uiState.profile.btcBalance)} BTC",
+                                text = if (uiState.engineState.isRunning) "نشط" else "متوقف",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = CryptoTextPrimary
+                                color = if (uiState.engineState.isRunning) BlockchainEmerald else CryptoTextMuted
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CryptoDarkBackground,
-                    titleContentColor = CryptoTextPrimary
+                    containerColor = CryptoDarkSurface
                 )
             )
         },
@@ -243,103 +200,164 @@ fun CryptoMiningApp(viewModel: MiningViewModel) {
                 containerColor = CryptoDarkSurface,
                 tonalElevation = 8.dp,
                 modifier = Modifier
-                    .border(1.dp, CryptoBorder, RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
-                    .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
+                    .navigationBarsPadding()
+                    .border(1.dp, CryptoBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             ) {
                 NavigationBarItem(
-                    selected = uiState.currentScreen == Screen.MINING,
-                    onClick = { viewModel.setScreen(Screen.MINING) },
-                    icon = { Icon(Icons.Default.Speed, contentDescription = "التعدين") },
-                    label = { Text("التعدين", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    selected = uiState.currentScreen == Screen.DASHBOARD,
+                    onClick = { viewModel.setScreen(Screen.DASHBOARD) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Speed,
+                            contentDescription = "المختبر",
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "المختبر",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BinanceYellow,
-                        selectedTextColor = BinanceYellow,
-                        unselectedIconColor = CryptoTextSecondary,
-                        unselectedTextColor = CryptoTextSecondary,
-                        indicatorColor = BinanceYellow.copy(alpha = 0.15f)
+                        selectedIconColor = BitcoinGold,
+                        selectedTextColor = BitcoinGold,
+                        indicatorColor = BitcoinGold.copy(alpha = 0.15f),
+                        unselectedIconColor = CryptoTextMuted,
+                        unselectedTextColor = CryptoTextMuted
                     ),
-                    modifier = Modifier.testTag("nav_mining")
-                )
-
-                NavigationBarItem(
-                    selected = uiState.currentScreen == Screen.TRANSFER,
-                    onClick = { viewModel.setScreen(Screen.TRANSFER) },
-                    icon = { Icon(Icons.Default.Send, contentDescription = "التحويل والسحب") },
-                    label = { Text("التحويل", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BinanceYellow,
-                        selectedTextColor = BinanceYellow,
-                        unselectedIconColor = CryptoTextSecondary,
-                        unselectedTextColor = CryptoTextSecondary,
-                        indicatorColor = BinanceYellow.copy(alpha = 0.15f)
-                    ),
-                    modifier = Modifier.testTag("nav_transfer")
+                    modifier = Modifier.testTag("nav_item_dashboard")
                 )
 
                 NavigationBarItem(
                     selected = uiState.currentScreen == Screen.HARDWARE,
                     onClick = { viewModel.setScreen(Screen.HARDWARE) },
-                    icon = { Icon(Icons.Default.Memory, contentDescription = "العتاد") },
-                    label = { Text("العتاد", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Thermostat,
+                            contentDescription = "العتاد والحرارة",
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "العتاد",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BinanceYellow,
-                        selectedTextColor = BinanceYellow,
-                        unselectedIconColor = CryptoTextSecondary,
-                        unselectedTextColor = CryptoTextSecondary,
-                        indicatorColor = BinanceYellow.copy(alpha = 0.15f)
+                        selectedIconColor = BlockchainEmerald,
+                        selectedTextColor = BlockchainEmerald,
+                        indicatorColor = BlockchainEmerald.copy(alpha = 0.15f),
+                        unselectedIconColor = CryptoTextMuted,
+                        unselectedTextColor = CryptoTextMuted
                     ),
-                    modifier = Modifier.testTag("nav_hardware")
+                    modifier = Modifier.testTag("nav_item_hardware")
                 )
 
                 NavigationBarItem(
-                    selected = uiState.currentScreen == Screen.TRANSACTIONS,
-                    onClick = { viewModel.setScreen(Screen.TRANSACTIONS) },
-                    icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "السجل") },
-                    label = { Text("السجل", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    selected = uiState.currentScreen == Screen.VALIDATOR,
+                    onClick = { viewModel.setScreen(Screen.VALIDATOR) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.QrCode,
+                            contentDescription = "فاحص العناوين",
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "العناوين",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BinanceYellow,
-                        selectedTextColor = BinanceYellow,
-                        unselectedIconColor = CryptoTextSecondary,
-                        unselectedTextColor = CryptoTextSecondary,
-                        indicatorColor = BinanceYellow.copy(alpha = 0.15f)
+                        selectedIconColor = BitcoinGold,
+                        selectedTextColor = BitcoinGold,
+                        indicatorColor = BitcoinGold.copy(alpha = 0.15f),
+                        unselectedIconColor = CryptoTextMuted,
+                        unselectedTextColor = CryptoTextMuted
                     ),
-                    modifier = Modifier.testTag("nav_history")
+                    modifier = Modifier.testTag("nav_item_validator")
                 )
 
                 NavigationBarItem(
-                    selected = uiState.currentScreen == Screen.MARKET,
-                    onClick = { viewModel.setScreen(Screen.MARKET) },
-                    icon = { Icon(Icons.Default.TrendingUp, contentDescription = "السوق") },
-                    label = { Text("السوق", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    selected = uiState.currentScreen == Screen.EDUCATION,
+                    onClick = { viewModel.setScreen(Screen.EDUCATION) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "دليل التعدين",
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "الدليل",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BinanceYellow,
-                        selectedTextColor = BinanceYellow,
-                        unselectedIconColor = CryptoTextSecondary,
-                        unselectedTextColor = CryptoTextSecondary,
-                        indicatorColor = BinanceYellow.copy(alpha = 0.15f)
+                        selectedIconColor = BitcoinGold,
+                        selectedTextColor = BitcoinGold,
+                        indicatorColor = BitcoinGold.copy(alpha = 0.15f),
+                        unselectedIconColor = CryptoTextMuted,
+                        unselectedTextColor = CryptoTextMuted
                     ),
-                    modifier = Modifier.testTag("nav_market")
+                    modifier = Modifier.testTag("nav_item_education")
+                )
+
+                NavigationBarItem(
+                    selected = uiState.currentScreen == Screen.INSTALL_GUIDE,
+                    onClick = { viewModel.setScreen(Screen.INSTALL_GUIDE) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = "تثبيت APK",
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "تثبيت APK",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = BlockchainEmerald,
+                        selectedTextColor = BlockchainEmerald,
+                        indicatorColor = BlockchainEmerald.copy(alpha = 0.15f),
+                        unselectedIconColor = CryptoTextMuted,
+                        unselectedTextColor = CryptoTextMuted
+                    ),
+                    modifier = Modifier.testTag("nav_item_install_guide")
                 )
             }
         }
     ) { innerPadding ->
-        Box(
+        AnimatedContent(
+            targetState = uiState.currentScreen,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "screen_transition",
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-        ) {
-            AnimatedContent(
-                targetState = uiState.currentScreen,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "ScreenTransition"
-            ) { targetScreen ->
-                when (targetScreen) {
-                    Screen.MINING -> MiningDashboardScreen(uiState = uiState, viewModel = viewModel)
-                    Screen.TRANSFER -> WithdrawTransferScreen(uiState = uiState, viewModel = viewModel)
-                    Screen.HARDWARE -> HardwareUpgradesScreen(uiState = uiState, viewModel = viewModel)
-                    Screen.TRANSACTIONS -> TransactionHistoryScreen(uiState = uiState, viewModel = viewModel)
-                    Screen.MARKET -> MarketCalculatorScreen(uiState = uiState, viewModel = viewModel)
-                }
+        ) { targetScreen ->
+            when (targetScreen) {
+                Screen.DASHBOARD -> DashboardScreen(
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+                Screen.HARDWARE -> HardwareTelemetryScreen(
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+                Screen.VALIDATOR -> AddressValidatorScreen(
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+                Screen.EDUCATION -> EducationalLabScreen()
+                Screen.INSTALL_GUIDE -> ApkInstallGuideScreen()
             }
         }
     }

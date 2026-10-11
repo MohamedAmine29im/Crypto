@@ -1,6 +1,6 @@
 {
-  "name": "CryptoMine Pro",
-  "description": "تطبيق تعدين العملات الرقمية وتحويل الأرباح إلى منصة بايننس ومحافظ البلوكشاين - Crypto Mining & Payout Manager",
+  "name": "Bitcoin Mining Lab",
+  "description": "Educational Bitcoin SHA-256 Proof-of-Work benchmark lab, real local cryptographic hashing, hardware telemetry, and thermal safety for Android.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

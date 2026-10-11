@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "CryptoMine Pro"
+rootProject.name = "Bitcoin Mining Lab"
 
 include(":app")
